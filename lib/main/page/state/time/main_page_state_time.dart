@@ -1,33 +1,55 @@
+import 'dart:async';
+
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:mango_watch/main/page/main_page.dart';
-import 'package:timer_builder/timer_builder.dart';
 
 class MainPageStateTime extends State<MainPage> {
-  int _dayOfWeekIndex = 0;
   final List<String> _dayOfWeeks = ['월', '화', '수', '목', '금', '토', '일'];
-  String _dayOfWeek = '';
-  String _timeNow =
-      formatDate(DateTime.now(), [hh, ':', nn, ':', ss, ':', SSS, ' ', am]);
+  late DateTime _timeNow;
+  String? _timeNowFormat;
+  Timer? _timer;
 
-  MainPageStateTime() {
-    this._dayOfWeek = this._dayOfWeeks[this._dayOfWeekIndex];
+  void digitalView() {
+    String amOrPm = this._timeNow.hour >= 12 ? '오후' : '오전';
+    String dayOfWeekString = this._dayOfWeeks[_timeNow.weekday - 1];
+    this._timeNowFormat = formatDate(this._timeNow, [
+      yyyy,
+      '-',
+      mm,
+      '-',
+      dd,
+      ' ',
+      '$dayOfWeekString',
+      '\n',
+      '$amOrPm',
+      ' ',
+      hh,
+      ':',
+      nn,
+      ':',
+      ss,
+      ':',
+      SSS
+    ]);
   }
 
-  void _updateDayOfWeek() {
+  void analogView() {}
+
+  void setInterval() {
     setState(() {
-      if (_dayOfWeekIndex < _dayOfWeeks.length - 1) {
-        _dayOfWeekIndex++;
-      } else {
-        _dayOfWeekIndex = 0;
-      }
-      _dayOfWeek = _dayOfWeeks[_dayOfWeekIndex];
+      _timeNow = DateTime.now();
+      this.digitalView();
+      this.analogView();
     });
   }
 
-  void _updateTimeNow() {
-    _timeNow =
-        formatDate(DateTime.now(), [hh, ':', nn, ':', ss, ':', SSS, ' ', am]);
+  @override
+  initState() {
+    super.initState();
+    _timer = Timer.periodic(Duration(milliseconds: 5), (timer) {
+      this.setInterval();
+    });
   }
 
   @override
@@ -39,22 +61,17 @@ class MainPageStateTime extends State<MainPage> {
         body: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            TimerBuilder.periodic(
-              const Duration(milliseconds: 10),
-              builder: (context) {
-                return Text(
-                  '$_timeNow',
-                  style: const TextStyle(
-                    fontSize: 50,
-                    fontWeight: FontWeight.w600,
-                  ),
-                );
-              },
-            ),
+            Text(
+              '$_timeNowFormat',
+              style: const TextStyle(
+                fontSize: 50,
+                fontWeight: FontWeight.w600,
+              ),
+            )
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: _updateDayOfWeek,
+          onPressed: setInterval,
           tooltip: 'update',
           child: const Icon(Icons.add),
         ));
