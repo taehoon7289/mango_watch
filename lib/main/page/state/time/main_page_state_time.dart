@@ -3,7 +3,8 @@ import 'dart:async';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:mango_watch/main/page/main_page.dart';
-
+import 'package:mango_watch/page_view/page_view_1.dart';
+import 'package:mango_watch/page_view/page_view_2.dart';
 
 class MainPageStateTime extends State<MainPage> {
   final List<String> _dayOfWeeks = ['월', '화', '수', '목', '금', '토', '일'];
@@ -69,6 +70,20 @@ class MainPageStateTime extends State<MainPage> {
                 fontSize: 50,
                 fontWeight: FontWeight.w600,
               ),
+            ),
+            ListTile(
+              title: Text('페이지뷰1로 가기'),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => PageView1()));
+              },
+            ),
+            ListTile(
+              title: Text('페이지뷰2로 가기'),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (context) => PageView2()));
+              },
             )
           ],
         ),
