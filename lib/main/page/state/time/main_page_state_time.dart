@@ -4,16 +4,16 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:mango_watch/main/page/main_page.dart';
 
+
 class MainPageStateTime extends State<MainPage> {
   final List<String> _dayOfWeeks = ['월', '화', '수', '목', '금', '토', '일'];
-  late DateTime _timeNow;
   String? _timeNowFormat;
   Timer? _timer;
 
-  void digitalView() {
-    String amOrPm = this._timeNow.hour >= 12 ? '오후' : '오전';
-    String dayOfWeekString = this._dayOfWeeks[_timeNow.weekday - 1];
-    this._timeNowFormat = formatDate(this._timeNow, [
+  void digitalView(DateTime nowDateTime) {
+    String amOrPm = nowDateTime.hour >= 12 ? '오후' : '오전';
+    String dayOfWeekString = this._dayOfWeeks[nowDateTime.weekday - 1];
+    this._timeNowFormat = formatDate(nowDateTime, [
       yyyy,
       '-',
       mm,
@@ -34,22 +34,24 @@ class MainPageStateTime extends State<MainPage> {
     ]);
   }
 
-  void analogView() {}
+  void analogView(DateTime nowDateTime) {}
 
   void setInterval() {
     setState(() {
-      _timeNow = DateTime.now();
-      this.digitalView();
-      this.analogView();
+      DateTime nowDateTime = DateTime.now();
+      this.digitalView(nowDateTime);
+      this.analogView(nowDateTime);
     });
   }
 
   @override
   initState() {
     super.initState();
-    _timer = Timer.periodic(Duration(milliseconds: 5), (timer) {
-      this.setInterval();
-    });
+    if (_timer == null) {
+      _timer = Timer.periodic(Duration(milliseconds: 5), (timer) {
+        this.setInterval();
+      });
+    }
   }
 
   @override
